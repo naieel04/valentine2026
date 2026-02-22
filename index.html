@@ -1,0 +1,579 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Happy Valentine's Day</title>
+    
+    <link rel="preconnect" href="https://fonts.googleapis.com"> 
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&family=VT323&display=swap" rel="stylesheet">
+
+
+    <style>
+        :root {
+            --font-title: 'Press Start 2P', monospace;
+            --font-ui: 'VT323', monospace;
+            --font-8bit: 'Press Start 2P', cursive, sans-serif;
+        }
+
+        /* --- SCROLL STATES --- */
+        body.scroll-active {
+            height: 300vh; 
+            margin: 0;
+            background-color: #000;
+            overflow-x: hidden;
+            overflow-y: auto;
+            font-family: var(--font-ui);
+        }
+
+        body.scroll-locked {
+            height: 100vh;
+            margin: 0;
+            background-color: #000;
+            overflow: hidden;
+            font-family: var(--font-ui);
+        }
+
+        .page {
+            position: fixed; 
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 3s ease-in-out; 
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            overflow: hidden;
+            z-index: 1;
+        }
+
+        .page.active {
+            opacity: 1;
+            pointer-events: auto;
+            z-index: 5;
+        }
+
+        /* --- PAGE 1: EXTERIOR --- */
+        #page1 .bg-zoom-container {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            background-image: url('chijmesExteriorWatermarkRemoved.png');
+            background-size: cover;
+            background-position: center;
+            transform-origin: 50% 85%; 
+            will-change: transform;
+            image-rendering: pixelated; 
+            transition: transform 4.5s cubic-bezier(0.7, 0, 0.3, 1); 
+        }
+
+        #page1 .bg-zoom-container.zoomed {
+            transform: scale(15);
+        }
+
+        .floating-title {
+            position: absolute;
+            top: 15%;
+            width: 50%;
+            
+            font-family: var(--font-title);
+            font-size: 4rem;
+            
+            text-align: center;
+            text-transform: uppercase;
+            line-height: 1.5;
+            letter-spacing: 0.1em; 
+            
+            /* White to Light Pink Gradient Fill */
+            background: linear-gradient(180deg, #f0e4e4 20%, #eb8896 80%);
+            -webkit-background-clip: text;
+            background-clip: text;
+            -webkit-text-fill-color: transparent;
+            color: transparent; /* Fallback */
+            
+            /* Thick Maroon Outline */
+            -webkit-text-stroke: 2px #6A1128;
+            
+            /* Blocky Shadow for 3D Floating Effect */
+            filter: drop-shadow(0px 8px 0px #420817);
+            
+            animation: float 4s ease-in-out infinite;
+            z-index: 10;
+            transition: opacity 1s ease; 
+        }
+
+        @keyframes float {
+            0%, 100% { transform: scaleX(1.2) translateY(0); }
+            50% { transform: scaleX(1.2) translateY(-20px); }
+        }
+
+        /* --- PAGE 2 & 3: INTERIOR BACKGROUND --- */
+        .interior-bg {
+            position: absolute;
+            top: 0; left: 0;
+            width: 100%;
+            height: 100%;
+            background-image: url('chijmesInteriorBenchesWatermarkRemoved.png');
+            background-size: cover;
+            background-position: center bottom;
+            image-rendering: pixelated;
+            z-index: 0; 
+        }
+
+        /* --- PAGE 2: VALENTINE PROMPT UI --- */
+        .prompt-container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            z-index: 10;
+            transition: opacity 0.5s ease;
+            margin-top: -10%; 
+        }
+
+        #emoji-face {
+            width: 150px; 
+            height: 150px;
+            object-fit: contain;
+            filter: drop-shadow(4px 4px 0px rgba(0,0,0,0.8)); 
+            transition: transform 0.3s;
+            -webkit-user-drag: none; 
+        }
+
+        .bubble-text {
+            background: #fff;
+            padding: 25px 30px;
+            border-radius: 0; 
+            font-family: var(--font-8bit);
+            font-size: 1.2rem;
+            line-height: 1.6;
+            color: #000;
+            margin-bottom: 30px;
+            border: 6px solid #000; 
+            box-shadow: 8px 8px 0px rgba(0,0,0,0.5);
+            text-align: center;
+            max-width: 80%;
+        }
+
+        .buttons {
+            display: flex;
+            gap: 30px;
+            position: relative;
+        }
+
+        .btn {
+            background: #fff;
+            font-family: var(--font-8bit);
+            border: 6px solid #000; 
+            border-radius: 0;
+            padding: 15px 20px;
+            font-size: 1rem;
+            cursor: pointer;
+            box-shadow: 6px 6px 0px rgba(0,0,0,0.5);
+            transition: transform 0.1s, box-shadow 0.1s, background 0.3s;
+        }
+
+        .btn:active { 
+            transform: translate(4px, 4px); 
+            box-shadow: 2px 2px 0px rgba(0,0,0,0.5); 
+        }
+        
+        #btn-yes { color: #4caf50; }
+        #btn-yes:hover { background: #e8f5e9; }
+        #btn-no { color: #f44336; transition: transform 0.4s steps(5); position: relative; z-index: 20; } 
+
+        /* --- PAGE 3: HIDDEN ANIMALS --- */
+        #wrong-msg {
+            position: absolute;
+            top: 20%;
+            font-family: var(--font-8bit);
+            font-size: 1.5rem;
+            color: #fff;
+            background: #f44336;
+            padding: 20px;
+            border: 6px solid #000;
+            box-shadow: 8px 8px 0px rgba(0,0,0,0.5);
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.3s steps(2);
+            z-index: 20;
+        }
+
+        .animal-slot {
+            position: absolute;
+            width: 80px;
+            height: 90px;
+            overflow: hidden; 
+            z-index: 5;
+        }
+
+        .animal {
+            position: absolute;
+            bottom: -90%; 
+            left: 0;
+            width: 100%; 
+            height: auto;
+            object-fit: contain;
+            cursor: pointer;
+            transition: bottom 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            -webkit-user-drag: none; 
+        }
+
+        .animal-slot:hover .animal { bottom: 0; }
+
+        .slot-1 { bottom: 20%; left: 25%; }  
+        .slot-2 { bottom: 25%; left: 35%; } 
+        .slot-3 { bottom: 24%; left: 40%; height:9% } 
+        .slot-4 { bottom: 20%; right: 25%; } 
+        .slot-5 { bottom: 24%; right: 32%; } 
+        .slot-6 { bottom: 28%; right: 38%; } 
+        .slot-7 { bottom: 56%; left: 51%; transform: translateX(-50%); } 
+
+        /* --- PAGE 4: 3D CAROUSEL --- */
+        #page4 { 
+            perspective: 1200px; 
+            background-image: url('carouselWatermarkRemoved.png');
+            background-size: cover;
+            background-position: center;
+            z-index: 100; 
+        }
+
+        #carousel-title {
+            position: absolute;
+            top: 5%; 
+            left: 50%;
+            transform: translateX(-50%);
+            margin-bottom: 0; 
+            z-index: 150;
+            transition: opacity 0.5s ease;
+            width: max-content; 
+            
+            /* NEW: Flexbox setup to stack the image and text nicely */
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 15px; /* Spacing between the picture and the text */
+        }
+        
+        /* NEW: Styling for the specific image inside the title box */
+        #title-box-img {
+            width: 80px; /* Adjust size as needed */
+            height: auto;
+            object-fit: contain;
+            -webkit-user-drag: none;
+            filter: drop-shadow(4px 4px 0px rgba(0,0,0,0.5)); /* Adds a slight retro shadow to the character */
+        }
+        
+        .carousel-container { position: relative; width: 300px; height: 400px; transform-style: preserve-3d; }
+        
+        .carousel-item {
+            position: absolute; top: 0; left: 0; 
+            width: 100%; height: 100%;
+            box-sizing: border-box; 
+            
+            background: #ffb3ba; 
+            border: 6px solid #000; 
+            padding: 16px; 
+            border-radius: 0; 
+            
+            box-shadow: 
+                inset 6px 6px 0px rgba(255, 255, 255, 0.7), 
+                inset -6px -6px 0px rgba(95, 93, 93, 0.2), 
+                3px 6px 0px rgba(85, 84, 84, 0.8); 
+                
+            cursor: pointer;
+            filter: brightness(1); 
+            transition: filter 0.5s ease, box-shadow 0.5s ease;
+        }
+        
+        .carousel-item img { 
+            width: 100%; height: 100%; 
+            object-fit: cover; 
+            border: 4px solid #000; 
+            box-sizing: border-box;
+            display: block;
+            -webkit-user-drag: none; 
+        }
+        
+        .vignette {
+            position: absolute; inset: 0; pointer-events: none;
+            background: radial-gradient(circle at center, transparent 30%, rgba(0,0,0,0.9) 100%);
+            opacity: 0; transition: opacity 0.8s ease; z-index: 100;
+        }
+
+        #carousel-description {
+            position: absolute;
+            bottom: 10%;
+            left: 50%;
+            transform: translateX(-50%);
+            z-index: 150; 
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.5s ease;
+            background: #fff;
+            padding: 20px 30px;
+            font-family: var(--font-8bit);
+            font-size: 1rem;
+            line-height: 1.5;
+            color: #000;
+            border: 6px solid #000; 
+            box-shadow: 8px 8px 0px rgba(0,0,0,0.5);
+            text-align: center;
+            width: 80%;
+            max-width: 600px;
+        }
+        
+        body.cinematic-focus .vignette { opacity: 1; }
+        body.cinematic-focus .carousel-item { filter: brightness(0.3); }
+        
+        body.cinematic-focus .carousel-item.active { 
+            filter: brightness(1.2); 
+            box-shadow: 
+                inset 6px 6px 0px rgba(255, 255, 255, 0.7), 
+                inset -6px -6px 0px rgba(95, 93, 93, 0.2), 
+                0 0 30px 10px #bae1ff, 
+                3px 6px 0px rgba(85, 84, 84, 0.8); 
+        }
+        
+        body.cinematic-focus #carousel-description { opacity: 1; }
+        body.cinematic-focus #carousel-title { opacity: 0; } 
+
+    </style>
+</head>
+<body class="scroll-active">
+
+    <div id="page1" class="page active">
+        <div class="bg-zoom-container" id="p1-bg"></div>
+        <h1 class="floating-title" id="p1-title">Will You be my Valentines?</h1>
+    </div>
+
+    <div id="page2" class="page">
+        <div class="interior-bg"></div>
+        <div class="prompt-container" id="valentine-prompt">
+            <img id="emoji-face" src="img/thoopthoopFaces/waave.png" alt="Reaction Face">
+            <div class="bubble-text">Will you play hide&seek with ThoopThoop?</div>
+            <div class="buttons">
+                <button class="btn" id="btn-yes">YES</button>
+                <button class="btn" id="btn-no">NO</button>
+            </div>
+        </div>
+    </div>
+
+    <div id="page3" class="page">
+        <div class="interior-bg"></div>
+        <div id="wrong-msg">WRONG! TRY AGAIN.</div>
+        
+        <div class="animal-slot slot-1"><img class="animal" data-type="stitch" src="img/friends/pixelStitch.png" alt="stitch"></div>
+        <div class="animal-slot slot-2"><img class="animal" data-type="pompom" src="img/friends/pixelPom.png" alt="pompom"></div>
+        <div class="animal-slot slot-3"><img class="animal" data-type="elmo" src="img/friends/pixelElmo.png" alt="elmo"></div>
+        <div class="animal-slot slot-4"><img class="animal" data-type="bunny" src="img/friends/pixelBuny.png" alt="bunny"></div>
+        <div class="animal-slot slot-5"><img class="animal" data-type="bug" src="img/friends/pixelBug.png" alt="bug"></div>
+        <div class="animal-slot slot-6"><img class="animal" data-type="bear" src="img/friends/pixelBear.png" alt="bear"></div>
+        <div class="animal-slot slot-7"><img class="animal" data-type="redpanda" src="img/thoopthoopFaces/box.png" alt="red panda"></div>
+    </div>
+
+    <div id="page4" class="page">
+        <div class="vignette"></div>
+        
+        <div class="bubble-text" id="carousel-title">
+            <img src="img\thoopthoopFaces\thoopthoopStickerPack2.png" alt="ThoopThoop" id="title-box-img">
+            <span>ThoopThoop fell asleep! Welcome to her Dreamland </span>
+        </div>
+        
+        <div class="carousel-container" id="carousel">
+            </div>
+        <div id="carousel-description"></div>
+    </div>
+
+    <script>
+        // --- PAGE TRANSITION & SCROLL ZOOM LOGIC ---
+        const page1 = document.getElementById('page1');
+        const p1Bg = document.getElementById('p1-bg');
+        const p1Title = document.getElementById('p1-title');
+        let activePage = 1;
+        let isZooming = false;
+
+        const scrollThreshold = window.innerHeight * 0.2; 
+
+        window.addEventListener('scroll', () => {
+            if (activePage !== 1 || isZooming) return;
+
+            if (window.scrollY >= scrollThreshold) {
+                isZooming = true;
+                
+                p1Bg.classList.add('zoomed');
+                p1Title.style.opacity = '0';
+
+                document.body.className = 'scroll-locked';
+
+                setTimeout(() => {
+                    switchPage(1, 2);
+                    window.scrollTo(0, 0); 
+                }, 1500); 
+            }
+        });
+
+        function switchPage(from, to) {
+            document.getElementById(`page${from}`).classList.remove('active');
+            document.getElementById(`page${to}`).classList.add('active');
+            activePage = to;
+
+            if (to === 4) initCarousel();
+        }
+
+        // --- PAGE 2 LOGIC: THE VALENTINE QUESTION ---
+        
+        const faceImages = [
+            'img/thoopthoopFaces/confused2.png', 'img/thoopthoopFaces/frustrated3.png', 'img/thoopthoopFaces/sad4.png', 'img/thoopthoopFaces/tear5.png', 'img/thoopthoopFaces/cry6.png'
+        ];
+        
+        let faceStage = 0;
+        const btnNo = document.getElementById('btn-no');
+        const btnYes = document.getElementById('btn-yes');
+        const emojiFace = document.getElementById('emoji-face');
+        const promptUI = document.getElementById('valentine-prompt');
+
+        btnNo.addEventListener('click', () => {
+            if (faceStage < faceImages.length - 1) {
+                faceStage++;
+                emojiFace.src = faceImages[faceStage];
+                
+                emojiFace.style.transform = `scale(1.2) rotate(${(Math.random()-0.5)*20}deg)`;
+                setTimeout(() => emojiFace.style.transform = 'scale(1) rotate(0)', 150);
+            }
+
+            const maxX = window.innerWidth * 0.4; 
+            const maxY = window.innerHeight * 0.4;
+            const randomX = (Math.random() - 0.5) * 2 * maxX;
+            const randomY = (Math.random() - 0.5) * 2 * maxY;
+            
+            btnNo.style.transform = `translate(${randomX}px, ${randomY}px)`;
+        });
+
+        btnYes.addEventListener('click', () => {
+            promptUI.style.opacity = '0';
+            setTimeout(() => switchPage(2, 3), 500); 
+        });
+
+        // --- PAGE 3 LOGIC: ANIMALS IN PEWS ---
+        const animals = document.querySelectorAll('.animal');
+        const wrongMsg = document.getElementById('wrong-msg');
+
+        animals.forEach(animal => {
+            animal.addEventListener('click', (e) => {
+                if (e.target.dataset.type === 'redpanda') {
+                    switchPage(3, 4);
+                } else {
+                    wrongMsg.style.opacity = '1';
+                    setTimeout(() => wrongMsg.style.opacity = '0', 1000);
+                }
+            });
+        });
+
+        // --- PAGE 4 LOGIC: 3D CAROUSEL ARCHITECTURE ---
+        const carousel = document.getElementById('carousel');
+        const descriptionBox = document.getElementById('carousel-description');
+        
+        const carouselData = [
+            { src: 'img/vday2023/IMG_7378.jpg', desc: "Valentines Day 2023! My first time making a 'cake' and had lots of fun and put in lots of love! I look so dumb with the cap but I'm glad to have these pics to remember HAHA " },
+            { src: 'img/vday2024/20240217_192325.jpg', desc: "Valentines Day 2024! Our first time we tried spanish food together(if u rmb) PAELLALALA! I really enjoyed the unique dinner setting and you looked stunning in the blue dress :> " },
+            { src: 'img/vday2025/20250219_184955.jpg', desc: "Valentines Day 2025! Our first time making lego together, building the flower was very wholesome and a relaxing activity but I enjoyed the company the most" },
+            { src: 'img/korea/20251208_023556.jpg', desc: "Korea 2025! Our very first time flying together weee I was so nervous for our safety but excited to travel together" },
+            { src: 'img/korea/20251211_152758.jpg', desc: "Gyeongbokgung Palace! Very gorgeous clothes and amazing weather and our first time dressing up in costumes! To many more travel pictures." },
+            { src: 'img/friends/thoopthoopDouble.png', desc: "Valentines Day 2026! Our very first LDR Vday date and food delivery exchange!" }
+        ];
+        
+        let numItems = carouselData.length;
+        let theta = 360 / numItems;
+        let currentAngle = 0;
+        let isAnimating = true;
+        let reqAnimId;
+
+        function initCarousel() {
+            const itemWidth = 300; 
+            const radius = Math.round((itemWidth / 2) / Math.tan(Math.PI / numItems)) + 150; 
+
+            carouselData.forEach((item, index) => {
+                let div = document.createElement('div');
+                div.className = 'carousel-item';
+                div.dataset.index = index;
+                div.dataset.angle = index * theta;
+                div.dataset.desc = item.desc;
+                
+                let img = document.createElement('img');
+                img.src = item.src;
+                div.appendChild(img);
+
+                div.style.transform = `rotateY(${index * theta}deg) translateZ(${radius}px)`;
+                carousel.appendChild(div);
+
+                div.addEventListener('click', handleCarouselClick);
+            });
+
+            startAnimationLoop();
+        }
+
+        function startAnimationLoop() {
+            if (!isAnimating) return;
+            
+            let mod = Math.abs(currentAngle % theta);
+            let distanceToSnap = Math.min(mod, theta - mod);
+            let attenuation = 0.1 + (distanceToSnap / (theta / 2)) * 0.5;
+            
+            currentAngle -= attenuation; 
+            carousel.style.transform = `rotateY(${currentAngle}deg)`;
+            
+            reqAnimId = requestAnimationFrame(startAnimationLoop);
+        }
+
+        function handleCarouselClick(e) {
+            isAnimating = false;
+            cancelAnimationFrame(reqAnimId);
+
+            carousel.style.transition = 'transform 0.8s cubic-bezier(0.25, 1, 0.5, 1)';
+
+            const clickedNode = e.currentTarget;
+            const targetIndex = parseInt(clickedNode.dataset.index);
+            const rawTargetAngle = targetIndex * -theta; 
+
+            let currentMod = currentAngle % 360;
+            let targetMod = rawTargetAngle % 360;
+            let diff = targetMod - currentMod;
+
+            if (diff > 180) diff -= 360;
+            if (diff < -180) diff += 360;
+
+            currentAngle += diff; 
+
+            carousel.style.transform = `rotateY(${currentAngle}deg)`;
+
+            descriptionBox.innerText = clickedNode.dataset.desc;
+
+            document.body.classList.add('cinematic-focus');
+            
+            document.querySelectorAll('.carousel-item').forEach(el => el.classList.remove('active'));
+            clickedNode.classList.add('active');
+
+            clickedNode.onclick = (event) => {
+                if (clickedNode.classList.contains('active')) {
+                    event.stopPropagation();
+                    document.body.classList.remove('cinematic-focus');
+                    clickedNode.classList.remove('active');
+                    
+                    setTimeout(() => {
+                        carousel.style.transition = 'none';
+                        isAnimating = true;
+                        startAnimationLoop();
+                    }, 500); 
+                    
+                    clickedNode.onclick = null;
+                    clickedNode.addEventListener('click', handleCarouselClick);
+                }
+            };
+        }
+    </script>
+</body>
+</html>
